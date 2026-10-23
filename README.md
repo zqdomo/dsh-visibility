@@ -33,7 +33,7 @@
 1. 打开设置：点左下角头像，或按 `Ctrl + ,`
 2. 左栏最下面找到 **「侧边栏入口」**
 3. 面板分两块：
-   - 上半块是**已经上到侧边栏的行**（顺序就是侧边栏的实际顺序）——拖动调整位置，右边的「隐藏」把它摘下去
+   - 上半块是**已经上到侧边栏的行**（顺序就是侧边栏的实际顺序）——拖动调整位置；系统自带的行右侧是「隐藏」（位置记住，随时放回来），自己添加的分区右侧是「移出」（摘回下面的候选区）
    - 下半块是**还没上来的设置分区**——点一下「放上去」就挂到侧边栏
 4. 侧边栏上直接拖也行：拖到某一行的上半部分是插到它前面，下半部分是插到它后面
 5. 侧边栏顶部那行「收起」能整组折叠
@@ -140,6 +140,8 @@ node tests/order.test.cjs && node tests/apply-order.test.cjs
 
 ## English
 
+[简体中文](#简体中文) · **English**
+
 A sidebar entry manager for DSH: turn any settings section into a one-click sidebar entry, and reorder, hide, or collapse **every row of the sidebar — including the built-in "Plugins" and "Tasks" rows**.
 
 Client-side only. No backend, no database, no fighting React's render order. All state lives in `localStorage`, so deleting the folder restores everything cleanly.
@@ -160,7 +162,7 @@ Client-side only. No backend, no database, no fighting React's render order. All
 1. Open Settings: click your avatar in the bottom-left corner, or press `Ctrl + ,`
 2. Find **"Sidebar Entries"** at the bottom of the left nav
 3. The panel has two parts:
-   - **Top:** rows currently on the sidebar, in their actual order. Drag to reorder, click "Hide" to remove one
+   - **Top:** rows currently on the sidebar, in their actual order. Drag to reorder. Built-in rows offer "Hide" — the position is remembered, so it returns to the same spot later. Sections you pinned offer "Remove", which sends them back to the list below
    - **Bottom:** settings sections that are not on the sidebar yet. Click "Add" to pin one
 4. You can also drag directly on the sidebar: drop on the upper half of a row to insert before it, lower half to insert after
 5. The header row at the top of the group collapses everything
