@@ -1,5 +1,8 @@
 # 侧边栏入口 · dsh-visibility
 
+[![test](https://github.com/zqdomo/dsh-visibility/actions/workflows/test.yml/badge.svg)](https://github.com/zqdomo/dsh-visibility/actions/workflows/test.yml)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+
 > 给 DSH 的左侧边栏加一个「入口管理器」：把设置里的任意分区变成侧边栏直达按钮，把侧边栏每一行（**包括系统自带的「插件」「任务」**）随意拖动排序、单独隐藏、整组收起。
 
 一个纯客户端插件，不碰后端、不改数据库、不劫持 React 的渲染顺序——状态全部存在浏览器 `localStorage`，装错了删掉目录就干净复原。
