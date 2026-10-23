@@ -1,0 +1,52 @@
+{
+  "name": "@local/dsh-visibility",
+  "version": "0.4.1",
+  "description": "在设置里提供「侧边栏入口」面板：勾选设置里的任意分区（技能、模型…），把它变成左侧边栏的直达入口；侧边栏的每一行——包括系统自带的「插件」「任务」——都能拖动排序、单独隐藏（位置记着，随时放回原位），整组还能一键收起。",
+  "type": "module",
+  "license": "MIT",
+  "author": "zqdomo <zqdomo@163.com>",
+  "homepage": "https://github.com/zqdomo/dsh-visibility#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zqdomo/dsh-visibility.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zqdomo/dsh-visibility/issues"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "sidebar",
+    "settings",
+    "ui",
+    "cordis"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node tests/order.test.cjs && node tests/apply-order.test.cjs"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "cordis.patch.yml"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-settings"
+      ]
+    }
+  }
+}
