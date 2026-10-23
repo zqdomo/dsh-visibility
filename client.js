@@ -80,6 +80,13 @@ window.__ModuleLoader__.load({
     const LINE = 'inset 0 2px 0 0 var(--dsw-alias-label-primary, currentColor)';
     const LINE_BOTTOM = 'inset 0 -2px 0 0 var(--dsw-alias-label-primary, currentColor)';
 
+    /**
+     * 算得上「用户点了个菜单」的元素：按钮、链接、菜单项、标签页、树行。
+     * 组展开时点到这些就顺手收起；点空白、选文字不算，免得手一抖就收起来。
+     */
+    const CLICK_TARGETS =
+      'button, a[href], summary, [role="button"], [role="menuitem"], [role="menuitemradio"], [role="option"], [role="tab"], [role="treeitem"], [role="link"]';
+
     // 内存里留一份，避免每次 DOM 变动都去 parse localStorage。
     let memState = null;
     // 侧边栏的行没有 React 状态可用，用一个小变量兜住"正在拖谁"。
@@ -995,6 +1002,18 @@ window.__ModuleLoader__.load({
     }
 
     /**
+     * 点了别处，要不要顺手把组收起来？
+     * 三条判据：已经收着就不用动；点的是标题行本身交给它自己管开关；
+     * 其余只认真正的可点控件（`CLICK_TARGETS`），点空白处、拖选文字都不算。
+     */
+    function shouldAutoCollapse(target, header, collapsed) {
+      if (collapsed) return false;
+      if (!target || typeof target.closest !== 'function') return false;
+      if (header && typeof header.contains === 'function' && header.contains(target)) return false;
+      return !!target.closest(CLICK_TARGETS);
+    }
+
+    /**
      * 组的「外观」：子行统一往右缩进，挂在标题行下面；
      * 收起时把每一行藏起来（`display:none`），标题行留着——点它就能展开。
      * 单独被藏的行（`hidden`）也走同一条路：两种"藏"叠加，任一成立就 `display:none`。
@@ -1492,6 +1511,28 @@ window.__ModuleLoader__.load({
         const observer = new MutationObserver(schedule);
         observer.observe(document.body, { childList: true, subtree: true });
 
+        // 组展开着时，只要点了别处的菜单——组里的行、侧边栏其它入口、会话列表、
+        // 账号菜单——就自动收起，把纵向空间还回去。等这一下点击自己走完再收，
+        // 免得把刚点中的那一行当场藏掉。走捕获阶段，先于行自己的点击逻辑。
+        let autoTimer = 0;
+        const onDocumentClick = (event) => {
+          if (window.__dshVisibilityGen !== GEN) return;
+          const target = event.target instanceof Element ? event.target : null;
+          if (!target) return;
+          const list = panelListEl();
+          if (!list) return;
+          const header = list.querySelector('[' + MARK + '="panel-header"]');
+          if (!shouldAutoCollapse(target, header, collapsedOf(currentState()))) return;
+          if (autoTimer) window.clearTimeout(autoTimer);
+          autoTimer = window.setTimeout(() => {
+            autoTimer = 0;
+            if (window.__dshVisibilityGen !== GEN) return;
+            if (collapsedOf(currentState())) return;
+            toggleCollapsed(ctx);
+          }, 0);
+        };
+        document.addEventListener('click', onDocumentClick, true);
+
         // 等在设置分区这个 slot 被声明后再注册自己的面板（声明感知的 inject）。
         const disposeSection = ctx.slots.inject('settings.section', () =>
           ctx.slots.register(
@@ -1509,6 +1550,8 @@ window.__ModuleLoader__.load({
 
         return () => {
           observer.disconnect();
+          document.removeEventListener('click', onDocumentClick, true);
+          if (autoTimer) window.clearTimeout(autoTimer);
           if (frame) cancelAnimationFrame(frame);
           if (typeof disposeSection === 'function') disposeSection();
         };

@@ -23,25 +23,38 @@ function extract(signature) {
   return lines.slice(start, end + 1).join('\n');
 }
 
+/** 切一个可能跨行的 `const NAME = ...;` 常量。 */
+function extractConst(name) {
+  const start = lines.findIndex((line) => line.indexOf('const ' + name + ' =') !== -1);
+  if (start === -1) throw new Error('没找到 const ' + name);
+  let end = start;
+  while (end < lines.length && !lines[end].trim().endsWith(';')) end += 1;
+  return lines.slice(start, end + 1).join('\n');
+}
+
 const source = extract('function applyOrder(list, layout)');
 const collapseSource = extract('function applyCollapse(');
 const hiddenSource = extract('function normalizeHidden(');
 const hiddenMapSource = extract('function hiddenMap(');
+const autoCollapseSource = extract('function shouldAutoCollapse(');
+const clickTargetsSource = extractConst('CLICK_TARGETS');
 
 const harness = `
 const MARK = 'data-dsh-sidebar-links';
 const SYS = 'sys:';
 function sysKey(label) { return SYS + label; }
 function isSys(key) { return typeof key === 'string' && key.indexOf(SYS) === 0; }
+${clickTargetsSource}
 ${hiddenSource}
 ${hiddenMapSource}
 ${source}
 ${collapseSource}
-module.exports = { applyOrder, applyCollapse, normalizeHidden, hiddenMap };
+${autoCollapseSource}
+module.exports = { applyOrder, applyCollapse, normalizeHidden, hiddenMap, shouldAutoCollapse, CLICK_TARGETS };
 `;
 const mod = { exports: {} };
 new Function('module', 'exports', harness)(mod, mod.exports);
-const { applyOrder, applyCollapse, normalizeHidden, hiddenMap } = mod.exports;
+const { applyOrder, applyCollapse, normalizeHidden, hiddenMap, shouldAutoCollapse, CLICK_TARGETS } = mod.exports;
 
 // ---- 假 DOM：只实现 applyOrder 用到的那几个成员 ----
 function row(label) {
@@ -214,6 +227,44 @@ checkHidden('去重', ['sys:插件', 'sys:插件'], ['sys:插件']);
 checkHidden('非数组当空', undefined, []);
 checkHidden('查表', ['sys:插件'], ['sys:插件']);
 console.log('ok   hiddenMap → ' + JSON.stringify(hiddenMap(['sys:插件'])));
+
+// ---- 点别处自动收起：只认真正的控件，点空白/选文字不动 ----
+function fakeTarget(clickable) {
+  return {
+    closest(selector) {
+      return clickable && selector === CLICK_TARGETS ? { tag: 'button' } : null;
+    }
+  };
+}
+
+function fakeHeader(child) {
+  return {
+    contains(node) {
+      return node === child;
+    }
+  };
+}
+
+function checkAuto(name, target, header, collapsed, expected) {
+  const actual = shouldAutoCollapse(target, header, collapsed);
+  if (actual !== expected) {
+    failures += 1;
+    console.log('FAIL ' + name + '  实际 ' + actual + ' 期望 ' + expected);
+  } else {
+    console.log('ok   ' + name + ' → ' + actual);
+  }
+}
+
+const plainHeader = fakeHeader(null);
+checkAuto('已经收着：不动', fakeTarget(true), plainHeader, true, false);
+checkAuto('点按钮：收起', fakeTarget(true), plainHeader, false, true);
+checkAuto('点空白：不动', fakeTarget(false), plainHeader, false, false);
+checkAuto('target 是空：不动', null, plainHeader, false, false);
+
+const headerChild = { tag: 'span' };
+const liveHeader = fakeHeader(headerChild);
+checkAuto('点标题行自己：交给它管开关', headerChild, liveHeader, false, false);
+checkAuto('标题行之外的按钮：照收', fakeTarget(true), liveHeader, false, true);
 
 console.log(failures === 0 ? '\nALL PASS' : '\n' + failures + ' FAILED');
 process.exit(failures === 0 ? 0 : 1);

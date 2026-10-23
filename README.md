@@ -19,6 +19,7 @@ Client-side only. No backend, no database, no fighting React's render order. All
 | **Drag to reorder** | Every row is draggable, including built-in rows like "Plugins" and "Tasks" |
 | **Hide a row** | Any row can be hidden. Its **position is remembered** — show it again and it returns to where it was, not to the bottom |
 | **Collapse the group** | One "Collapse / Expand" toggle folds the whole group into a single header line, giving the space back to your session list |
+| **Auto-collapse** | While the group is open, clicking any other menu — a row inside it, another sidebar entry, a session, the account menu — folds it back up for you |
 | **Restore all** | A "Show all" button at the bottom of the panel undoes accidental hiding |
 | **Migration** | Automatically detects and migrates the v1 / v2 / v3 storage formats |
 
@@ -32,7 +33,7 @@ Client-side only. No backend, no database, no fighting React's render order. All
    - **Top:** rows currently on the sidebar, in their actual order. Drag to reorder. Built-in rows offer "Hide" — the position is remembered, so it returns to the same spot later. Sections you pinned offer "Remove", which sends them back to the list below
    - **Bottom:** settings sections that are not on the sidebar yet. Click "Add" to pin one
 4. You can also drag directly on the sidebar: drop on the upper half of a row to insert before it, lower half to insert after
-5. The header row at the top of the group collapses everything
+5. The "Extensions" header row at the top of the group collapses everything; while open, clicking any other menu folds it back up automatically
 
 > State is stored in `localStorage` under the key `dsh-sidebar-links.v4`. It does not sync across browser profiles or machines — that is intended.
 
