@@ -36,6 +36,25 @@ Client-side only. No backend, no database, no fighting React's render order. All
 
 > State is stored in `localStorage` under the key `dsh-sidebar-links.v4`. It does not sync across browser profiles or machines — that is intended.
 
+## Compatibility
+
+| Item | Tested version |
+| --- | --- |
+| DSH core | **0.2.1-rc.2** (`@deepseek-ai/dsh-base`, `dsh-client-ui-settings`, `dsh-agent`) |
+| DSH desktop | DSH NEXT `2.0.19-next` (Windows) |
+| cordis | `4.0.5` |
+| Node.js | ≥ 20 |
+
+`package.json` declares the supported range following the community convention:
+
+```json
+"engines": { "dsh": ">=0.2.1-rc.2 <0.3.0" }
+```
+
+So **0.2.1-rc.2 up to (but not including) 0.3.0** will install. Nothing above 0.3 has been verified — if DSH changes the Settings modal DOM (`data-shortcut-modal`) or the sidebar list structure, this plugin will break, and the fix is to update the selector constants at the top of `client.js`.
+
+> Verified on **Windows desktop** (`desktop` profile) only. The web build runs the same client code and should work in theory, but that has not been tested — reports welcome.
+
 ## Installation
 
 The package name is `@local/dsh-visibility`. The `@local` prefix exists so that a local `link:` install keeps working; it does not affect installing from GitHub.

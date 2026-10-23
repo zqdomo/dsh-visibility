@@ -1,6 +1,6 @@
 {
   "name": "@local/dsh-visibility",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "在设置里提供「侧边栏入口」面板：勾选设置里的任意分区（技能、模型…），把它变成左侧边栏的直达入口；侧边栏的每一行——包括系统自带的「插件」「任务」——都能拖动排序、单独隐藏（位置记着，随时放回原位），整组还能一键收起。",
   "type": "module",
   "license": "MIT",
@@ -23,7 +23,8 @@
     "cordis"
   ],
   "engines": {
-    "node": ">=20"
+    "node": ">=20",
+    "dsh": ">=0.2.1-rc.2 <0.3.0"
   },
   "scripts": {
     "test": "node tests/order.test.cjs && node tests/apply-order.test.cjs"
@@ -38,6 +39,12 @@
     "cordis.patch.yml"
   ],
   "dsh": {
+    "compatibility": {
+      "dsh": ">=0.2.1-rc.2 <0.3.0",
+      "dshReleases": {
+        "0.2.1-rc.2": "compatible"
+      }
+    },
     "bundle": {
       "patch": "./cordis.patch.yml"
     },

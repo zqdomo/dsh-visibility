@@ -36,6 +36,25 @@
 
 > 状态存在 `localStorage` 的 `dsh-sidebar-links.v4` 键里。换浏览器 profile 或换设备不会同步，属于预期行为。
 
+## 兼容性
+
+| 项目 | 实测版本 |
+| --- | --- |
+| DSH 核心 | **0.2.1-rc.2**（`@deepseek-ai/dsh-base`、`dsh-client-ui-settings`、`dsh-agent`） |
+| DSH 桌面端 | DSH NEXT `2.0.19-next`（Windows） |
+| cordis | `4.0.5` |
+| Node.js | ≥ 20 |
+
+`package.json` 里按社区约定声明了兼容范围：
+
+```json
+"engines": { "dsh": ">=0.2.1-rc.2 <0.3.0" }
+```
+
+也就是说 **0.2.1-rc.2 到 0.3.0 之前**的 DSH 可以装。0.3 及以上没有验证过——如果 DSH 改动了设置弹窗的 DOM 结构（`data-shortcut-modal`）或侧边栏列表的结构，插件会失效，届时更新 `client.js` 顶部的选择器常量即可。
+
+> 实测只在 **Windows 桌面端**（`desktop` profile）跑通过。Web 端用的是同一套客户端代码，理论上可用，但我没有验证过——欢迎反馈结果。
+
 ## 安装
 
 本插件的包名是 `@local/dsh-visibility`（保留 `@local` 前缀是为了兼容本地 `link:` 安装方式，不影响从 GitHub 安装）。
